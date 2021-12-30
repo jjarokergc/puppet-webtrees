@@ -1,0 +1,15 @@
+# Module-level defaults
+---
+# Data Merging Options
+# (Over-ride these defaults by using an environment-specific data file)
+lookup_options:
+  webtrees::provisioning:
+    merge: hash
+
+# OS Specific Provisioning
+webtrees::provisioning:
+  wwwroot: "/var/www"
+  user: "www-data"
+  group: "www-data"
+  php-fpm:
+    sock: /var/run/php/php-fpm.sock

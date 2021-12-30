@@ -1,0 +1,16 @@
+<%- | String $host,
+      Integer $port,
+      String $user,
+      String $pass,
+      String $name,
+      String $table_prefix,
+      String $type,
+| %>
+; DATABASE CONNECTION
+dbtype="<%= $type %>"
+dbhost="<%= $host %>"
+dbport="<%= $port %>"
+dbuser="<%= $user %>"
+dbpass="<%= $pass %>"
+dbname="<%= $name %>"
+tblpfx="<%= $table_prefix %>"

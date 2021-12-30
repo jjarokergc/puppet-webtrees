@@ -1,0 +1,67 @@
+# Webtrees Module-level defaults
+---
+# Data Merging Options
+# (Over-ride these defaults by using an environment-specific data file)
+lookup_options:
+  webtrees::configuration:
+    merge: hash
+  webtrees::source:
+    merge: hash
+
+# nginx::reverse_proxy: #Locate in Node data
+#   server:
+#     fqdn: 'webtrees.example.com'        # server name
+#     client_max_body_size: '80m'        # allowed size of uploaded files
+#   location:
+#     modsecurity:
+#       on_off: 'on'                    # 'on' or 'off' to enable modsecurity in ngnix
+#       config_filename: "webtrees.conf"  # configuration file must exist in /etc/nginx/modsec
+
+webtrees::configuration:
+  config_file:
+    path : 'data/config.ini.php'      # Webtrees configuration file
+    base_url: 'http://dev.datacenter' # Specify URL for webtrees site
+    rewrite_urls: '1'                 # Pretty URLs. NGINX compatible config required.
+  db:
+    name: 'db_webtrees'
+    user: 'wt_user'
+    pass: 'wt_password'
+    host: 'db.example.com'
+    port: 3306
+    table_prefix: 'wt_'
+    type: 'mysql' # Database type
+  phpini: # php.ini settings
+    tz: 'America/New_York'   # Time Zone
+    mem_limit: '128M'
+    cpu_time: '80' # Max Execution Time
+webtrees::source: 
+  # See: https://github.com/fisharebest/webtrees/releases
+  version: "2.0.19"
+  download_link: 'https://github.com/fisharebest/webtrees/archive/refs/tags'
+webtrees::php: # php.ini configuration
+  logging_mode: 'debugging' # Selects one of the logging modes below.
+  general:
+    PHP/memory_limit: '128M'
+    PHP/max_execution_time: '80' # Max Execution Time
+    PHP/log_errors: 'On' # Error logging is always on
+    PHP/error_log: 'syslog'
+    Date/date.timezone: 'America/New_York'
+  production: #Logging Mode
+    PHP/error_reporting: 'E_ALL & ~E_DEPRECATED & ~E_STRICT'
+    PHP/display_errors: 'Off'
+    PHP/display_startup_errors: 'Off'
+    PHP/log_errors_max_len: '1024'
+  debugging: #Logging Mode
+    PHP/error_reporting: 'E_ALL'
+    PHP/display_errors: 'On'
+    PHP/display_startup_errors: 'On'
+    PHP/log_errors_max_len: '0'
+webtrees::fpm_pools: # php fpm configuration
+  production: #Logging Mode
+    catch_workers_output: 'no'
+    accesslog: ''
+    errorlog: ''
+  debugging: #Logging Mode
+    catch_workers_output: 'yes'
+    accesslog: /var/log/php-fpm/fpm-access.log
+    errorlog: /var/log/php-fpm/fpm-error.log
