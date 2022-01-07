@@ -26,7 +26,10 @@ class webtrees::nginx {
 
 
   # NGINX WEB SERVER
-  class {'::nginx':}
+  class { '::nginx':
+    # Security precaution: don't show nginx version number
+    server_tokens         => 'off',
+  }
   nginx::resource::server { $server_name:
     server_name          => [$server_name, $::fqdn],
     use_default_location => false,
