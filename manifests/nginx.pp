@@ -15,7 +15,8 @@ class webtrees::nginx {
   $version = $source['version']      # Webtrees version
   $download_link = "${source['download_link']}/${version}.tar.gz" # URL for downloading webtrees
 
-  $server_name = $nx[server][fqdn]                     # Example 'example.com'
+  $server_name = $nx['server']['fqdn']                     # Example 'example.com'
+  $server_id = $nx['server']['name']
   $vhost_dir = "${provisioning['wwwroot']}/${server_name}"  # #xample '/var/www/example.com'
   $webtrees_dir = "webtrees-${version}"  # Webtrees subdirectory
   $www_root = "${vhost_dir}/${webtrees_dir}" # Example '/var/www/example.com/webtrees/'
@@ -30,7 +31,7 @@ class webtrees::nginx {
     # Security precaution: don't show nginx version number
     server_tokens         => 'off',
   }
-  nginx::resource::server { $server_name:
+  nginx::resource::server { $server_id:
     server_name          => [$server_name, $::fqdn],
     use_default_location => false,
     www_root             => $www_root,
@@ -40,19 +41,19 @@ class webtrees::nginx {
   }
 
   nginx::resource::location { '/':
-    server        => $server_name,
+    server        => $server_id,
     index_files   => [],
     rewrite_rules => ['^ /index.php last'], # Rewrite all other requests onto the webtrees front-controller.
   }
   nginx::resource::location { '= /index.php':# webtrees runs from this one script.
-      server        => $server_name,
+      server        => $server_id,
       index_files   => [],
       include       => ['fastcgi_params'],
       fastcgi_param => {'SCRIPT_FILENAME' => '$document_root$fastcgi_script_name'},
       fastcgi       => "unix:${socket}",
       }
   nginx::resource::location { '/public':
-    server      => $server_name,
+    server      => $server_id,
     index_files => [],
     expires     => 'max',
   }
