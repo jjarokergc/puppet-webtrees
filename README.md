@@ -50,13 +50,15 @@ site/role/app/webtrees_server.pp
 #
 class role::app::webtrees_server {
 
-  include profile::base_configuration
+  include profile::base_configuration  # Creates admin user accounts, 
+                                       # installs basic O/S packages
 
   # Install Webtrees
   include profile::webtrees
 
   # Export configuration for NGINX reverse proxy
-  include ::webtrees::reverse_proxy_export
+  include ::webtrees::reverse_proxy_export  # Exports Server and Location directives to the 
+                                            # Nginx reverse proxy
 
 }
 ```
@@ -80,6 +82,49 @@ class profile::webtrees {
   # 4 - NGINX WEB SERVER
   class {'::webtrees::nginx':}
 }
+```
+
+## Hiera Data Example
+
+``` yaml
+# Webtrees Data
+# /etc/puppetlabs/code/environments/production/data/nodes/webtrees.domain.yaml
+---
+nginx::reverse_proxy:
+  server:
+    name: 'webtrees.example.com'
+    fqdn: ['webtrees.example.com']        # server name
+    client_max_body_size: '80m'        # allowed size of uploaded files
+  location:
+    modsecurity:
+      on_off: 'on'                    # 'on' or 'off' to enable modsecurity in ngnix
+      config_filename: "webtrees.conf"  # configuration file must exist in /etc/nginx/modsec
+webtrees::configuration:
+  config_file:
+    path : 'data/config.ini.php'      # Webtrees configuration file
+    base_url: 'https://webtrees.example.com' # Specify URL for webtrees site
+    rewrite_urls: '1'                 # Pretty URLs. NGINX compatible config required.
+  db:
+    name: 'wt'
+    user: 'wtuser'
+    pass: 'wtpass'
+    host: 'db.example.org'
+    port: 3306
+    table_prefix: 'wt_'
+    type: 'mysql' # Database type
+  phpini: # php.ini settings
+    tz: 'America/New_York'   # Time Zone
+    mem_limit: '128M'
+    cpu_time: '80' # Max Execution Time
+webtrees::source: 
+  # See: https://github.com/fisharebest/webtrees/releases
+  version: "2.0.19"
+  download_link: 'https://github.com/fisharebest/webtrees/archive/refs/tags'
+
+# Webtrees PHP debug logging level.  Normal is 'notice'
+php::fpm::config::log_level: 'error'
+webtrees::php: # php.ini configuration
+  logging_mode: 'production' # See module data. 'production' or 'debugging'
 ```
 
 ## Author
