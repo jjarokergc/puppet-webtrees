@@ -32,7 +32,7 @@ class webtrees::nginx {
     server_tokens         => 'off',
   }
   nginx::resource::server { $server_id:
-    server_name          => [$server_name, $::fqdn],
+    server_name          => [$server_name] + [$::fqdn],
     use_default_location => false,
     www_root             => $www_root,
     index_files          => [],
