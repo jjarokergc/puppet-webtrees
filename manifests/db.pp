@@ -13,7 +13,7 @@ class webtrees::db {
   $version = $source['version']      # Webtrees version
   $download_link = "${source['download_link']}/${version}.tar.gz" # URL for downloading webtrees
 
-  $server_name = $nx[server][fqdn]                     # Example 'example.com'
+  $server_name = $nx['server']['name']                     # Example 'example.com'
   $vhost_dir = "${provisioning['wwwroot']}/${server_name}"  # #xample '/var/www/example.com'
   $webtrees_dir = "webtrees-${version}"  # Webtrees subdirectory
   $www_root = "${vhost_dir}/${webtrees_dir}" # Example '/var/www/example.com/webtrees/'
