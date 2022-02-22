@@ -50,7 +50,7 @@ site/role/app/webtrees_server.pp
 #
 class role::app::webtrees_server {
 
-  include profile::base_configuration  # Creates admin user accounts, 
+  include profile::base::common  # Creates admin user accounts, 
                                        # installs basic O/S packages
 
   # Install Webtrees
