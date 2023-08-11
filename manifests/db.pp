@@ -35,7 +35,7 @@ class webtrees::db {
     password => $db['pass'],
     host     => $::fqdn,  # user from the wordpress-host is granted access to remote database server
     grant    => ['ALL'],
-    charset  => ['utf8mb3'],  # same as utf8 but new name in mysql
+    charset  => 'utf8mb3',  # same as utf8 but new name in mysql
     tag      => $db['host'],  # to be collected on the database remote host
   }
 
