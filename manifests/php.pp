@@ -1,11 +1,9 @@
 # Install php for webtrees
 # Requires puppet-php module
 class webtrees::php (
-){
-
+) {
   # VARIABLES
   $provisioning = lookup('webtrees::provisioning')  # OS-specific parameters
-  $nx           = lookup('nginx::reverse_proxy')    # Reverse proxy
   $configuration= lookup('webtrees::configuration')         # Host-specific parameters
   $source       = lookup('webtrees::source')        # Host-specific parameters
   $php          = lookup('webtrees::php')
@@ -24,42 +22,41 @@ class webtrees::php (
   # Logging 
   if $fpm[$lm]['accesslog'] != '' { # Hiera data has access log specified
     $access_log = $fpm[$lm]['accesslog']
-    file {$access_log:
-      ensure  => present,
+    file { $access_log:
+      ensure  => file,
       owner   => $user,
       group   => $group,
       mode    => '0660',
-      require => Class['::php'],
+      require => Class['php'],
     }
   } else {
     $access_log = undef
   }
   if $fpm[$lm]['errorlog'] != '' { # Hiera data has error log specified
     $error_log = $fpm[$lm]['errorlog']
-    file {$error_log:
-      ensure  => present,
+    file { $error_log:
+      ensure  => file,
       owner   => $user,
       group   => $group,
       mode    => '0660',
-      require => Class['::php'],
-      }
-    $phpfpm_flag        = {'display_errors' => 'on',   }
-    $phpfpm_admin_value = {'error_log'      => $error_log, }
-    $phpfpm_admin_flag  = {'log_errors'     => 'on',   }
+      require => Class['php'],
+    }
+    $phpfpm_flag        = { 'display_errors' => 'on', }
+    $phpfpm_admin_value = { 'error_log'      => $error_log, }
+    $phpfpm_admin_flag  = { 'log_errors'     => 'on', }
   } else {
     $phpfpm_flag        = undef
     $phpfpm_admin_value = undef
     $phpfpm_admin_flag  = undef
-
   }
 
   # Install PHP and PHP-XML for NGINX
-  file {$socket:
+  file { $socket:
     owner   => $user,
     group   => $group,
-    require => Class['::php'],
+    require => Class['php'],
   }
-  class{'::php':
+  class { 'php':
     ensure     => present,
     fpm        => true,
     dev        => false,
@@ -85,18 +82,17 @@ class webtrees::php (
         'pm_min_spare_servers'      => 10,
         'pm_start_servers'          => 20,
         'request_terminate_timeout' => 0,
-          },
-        },
+      },
+    },
     pool_purge => true,
     extensions => {
-            'curl'     => {},
-            'intl'     => {},
-            'mbstring' => {},
-            'gd'       => {},
-            'mysql'    => {},
-            'xml'      => {},
-            'zip'      => {},
-              },
+      'curl'     => {},
+      'intl'     => {},
+      'mbstring' => {},
+      'gd'       => {},
+      'mysql'    => {},
+      'xml'      => {},
+      'zip'      => {},
+    },
   }
-
 }
