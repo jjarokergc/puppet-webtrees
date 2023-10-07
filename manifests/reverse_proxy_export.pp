@@ -1,13 +1,12 @@
 # Webtrees Reverse Proxy Configuration
 # Configuration data in hiera
 # Exports resources to reverse proxy server
-#
-class webtrees::reverse_proxy_export{
-
+# TODO: Move this to nginx reverse proxy export, with hiera definition of locations
+class webtrees::reverse_proxy_export {
 # VARIABLES
   $nx = lookup('nginx::reverse_proxy')
   $server_name = $nx['server']['name']
-  $virtualhost_url = "http://${::ipaddress}"
+  $virtualhost_url = "http://${facts['networking']['ip']}"
 
 # 1 - NGINX SERVER, LETSENCRYPT, MODSECURITY, CACHING
   include profile::nginx::reverse_proxy_export
@@ -23,8 +22,8 @@ class webtrees::reverse_proxy_export{
     ssl_only            => true,
     index_files         => [],
     location_cfg_append => {
-                          'access_log' => 'off',
-                      },
+      'access_log' => 'off',
+    },
   }
 # Restricted locations
   @@nginx::resource::location { "Restricted Files ${server_name}:SSL" :
@@ -37,9 +36,8 @@ class webtrees::reverse_proxy_export{
     index_files         => [],
     location_deny       => ['all'],
     location_cfg_append => {
-                          'log_not_found' => 'on',  #Log the error for use by Fail2Ban
-                          'return'        => '404',
-                          },
+      'log_not_found' => 'on',  #Log the error for use by Fail2Ban
+      'return'        => '404',
+    },
   }
-
 }
