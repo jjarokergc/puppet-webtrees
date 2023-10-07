@@ -4,23 +4,27 @@
 # (Over-ride these defaults by using an environment-specific data file)
 lookup_options:
   webtrees::configuration:
-    merge: hash
+    merge:
+      strategy: deep
+      merge_hash_arrays: true
   webtrees::source:
-    merge: hash
-
-# nginx::reverse_proxy: #Locate in Node data
-#   server:
-#     fqdn: 'webtrees.example.com'        # server name
-#     client_max_body_size: '80m'        # allowed size of uploaded files
-#   location:
-#     modsecurity:
-#       on_off: 'on'                    # 'on' or 'off' to enable modsecurity in ngnix
-#       config_filename: "webtrees.conf"  # configuration file must exist in /etc/nginx/modsec
+    merge:
+      strategy: deep
+      merge_hash_arrays: true
+  webtrees::php:
+    merge:
+      strategy: deep
+      merge_hash_arrays: true
 
 webtrees::configuration:
+  server: # Local nginx server configuration
+    fqdn: "example.com" # Main fqdn for this server - Used in config
+    urls:   # List of all listen urls for Nginx. Node's own fqdn included through the 'deep' merge strategy
+      - "%{networking.fqdn}"
+    client_max_body_size: "10m"
   config_file:
     path : 'data/config.ini.php'      # Webtrees configuration file
-    base_url: 'http://dev.datacenter' # Specify URL for webtrees site
+    base_url_scheme: 'https' # Used with 'fqdn' to form URL. Either 'http' or 'https'
     rewrite_urls: '1'                 # Pretty URLs. NGINX compatible config required.
   db:
     name: 'db_webtrees'
@@ -65,3 +69,6 @@ webtrees::fpm_pools: # php fpm configuration
     catch_workers_output: 'yes'
     accesslog: /var/log/php-fpm/fpm-access.log
     errorlog: /var/log/php-fpm/fpm-error.log
+
+# Webtrees PHP debug logging level.  Normal is 'notice'
+php::fpm::config::log_level: 'error'

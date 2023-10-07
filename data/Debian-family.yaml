@@ -4,7 +4,9 @@
 # (Over-ride these defaults by using an environment-specific data file)
 lookup_options:
   webtrees::provisioning:
-    merge: hash
+    merge:
+      strategy: deep
+      merge_hash_arrays: true
 
 # OS Specific Provisioning
 webtrees::provisioning:
