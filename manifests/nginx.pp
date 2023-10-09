@@ -13,6 +13,7 @@ class webtrees::nginx {
   $version = $source['version']      # Webtrees version
   $download_link = "${source['download_link']}/${version}.tar.gz" # URL for downloading webtrees
 
+  $server_params = $configuration['server_params']  # Hash of paramters used by nginx server class
   $server_urls = $configuration['server']['urls'] # Array of urls is merged with common.yaml 
   $server_name = $configuration['server']['fqdn']
   $vhost_dir = "${provisioning['wwwroot']}/${server_name}"  # #xample '/var/www/example.com'
@@ -26,15 +27,14 @@ class webtrees::nginx {
   # NGINX WEB SERVER
   class { 'nginx':
     # Security precaution: don't show nginx version number
-    server_tokens         => 'off',
+    server_tokens    => 'off',
+    proxy_set_header => []   # Disable proxy params on this nginx instance
   }
   nginx::resource::server { $server_name:
-    server_name          => $server_urls,
-    use_default_location => false,
-    www_root             => $www_root,
-    index_files          => [],
-    client_max_body_size => $configuration['server']['client_max_body_size'],
-    require              => Archive['webtrees'],
+    server_name => $server_urls,
+    www_root    => $www_root,
+    require     => Archive['webtrees'],
+    *           => $server_params,
   }
 
   nginx::resource::location { '/':
