@@ -46,7 +46,7 @@ class webtrees::install {
     require      => File[$vhost_dir],
     notify       => Exec['Rename Webtrees Directory'],
   }
-  exec { 'Rename Webtrees Directory':
+  exec { 'Rename Webtrees Directory': # For convenience, use directory name that includes webtrees version
     cwd         => $vhost_dir,
     command     => ['mv', 'webtrees', $webtrees_dir],
     refreshonly => true,
@@ -81,4 +81,10 @@ class webtrees::install {
     content => "rewrite_urls='${configuration['config_file']['rewrite_urls']}'\n",
     order   => '11',
   }
+
+  # TBD - See: https://webtrees.net/admin/proxy/
+  # Determine whether it is necessary to set IP from proxy
+  # Currently, this nginx app server is configured to restore the real IP that is
+  # sent by the reverse proxy.  Setting real ip again in config.ini.php may be 
+  # redundant or wrong
 }
