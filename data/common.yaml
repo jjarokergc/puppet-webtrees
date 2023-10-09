@@ -21,7 +21,13 @@ webtrees::configuration:
     fqdn: "example.com" # Main fqdn for this server - Used in config
     urls:   # List of all listen urls for Nginx. Node's own fqdn included through the 'deep' merge strategy
       - "%{networking.fqdn}"
-    client_max_body_size: "10m"
+  server_params: # These parameters are passed to nginx::resource::server
+    index_files: []
+    use_default_location: false
+    client_max_body_size: "10m"         # Max size of upload
+    server_cfg_prepend: # nginx module doesn't have real_ip, so use this workaround
+      real_ip_header: 'X-Forwarded-For' # Set real ip on this nginx app server from what was received from proxy
+      set_real_ip_from: '10.10.0.0/16'  # Only trust if this information comes from the actual proxy server; otherwise, easy to spoof
   config_file:
     path : 'data/config.ini.php'      # Webtrees configuration file
     base_url_scheme: 'https' # Used with 'fqdn' to form base_URL. Either 'http' or 'https'
