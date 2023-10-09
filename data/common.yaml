@@ -43,7 +43,7 @@ webtrees::source:
   version: "2.1.17"
   download_link: 'https://github.com/fisharebest/webtrees/releases/download'
 webtrees::php: # php.ini configuration
-  logging_mode: 'debugging' # Selects one of the logging modes below.
+  logging_mode: 'production' # Select one of the logging modes below: production or debugging
   general:
     PHP/memory_limit: '128M'
     PHP/max_execution_time: '80' # Max Execution Time
@@ -71,4 +71,5 @@ webtrees::fpm_pools: # php fpm configuration
     errorlog: /var/log/php-fpm/fpm-error.log
 
 # Webtrees PHP debug logging level.  Normal is 'notice'
+# This parameter is used by php module
 php::fpm::config::log_level: 'error'
