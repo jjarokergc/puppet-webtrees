@@ -9,11 +9,11 @@ class webtrees::install {
 
   # Derived Values
   $version = $source['version']      # Webtrees version
-  $download_link = "${source['download_link']}/${version}.tar.gz" # URL for downloading webtrees
+  $webtrees_dir = "webtrees-${version}"  # Webtrees subdirectory
+  $download_url = "${source['download_link']}/${version}/${webtrees_dir}.zip" # URL for downloading webtrees
 
   $server_name = $configuration['server']['fqdn']
   $vhost_dir = "${provisioning['wwwroot']}/${server_name}"  # #xample '/var/www/example.com'
-  $webtrees_dir = "webtrees-${version}"  # Webtrees subdirectory
   $www_root = "${vhost_dir}/${webtrees_dir}" # Example '/var/www/example.com/webtrees/'
 
   $user = $provisioning['user']
@@ -32,26 +32,37 @@ class webtrees::install {
       owner  => $user,
       group  => $group,
   }
+  package { 'unzip': ensure => installed, } # Required by archive module for zip files
   archive { 'webtrees':
     ensure       => present,
-    path         => "/tmp/${webtrees_dir}.tar.gz",
+    path         => "/tmp/${webtrees_dir}.zip",
     extract      => true,
     extract_path => $vhost_dir,
-    source       => $download_link,
+    source       => $download_url,
     creates      => $www_root,
     user         => $user,
     group        => $group,
     cleanup      => true,
     require      => File[$vhost_dir],
+    notify       => Exec['Rename Webtrees Directory'],
+  }
+  exec { 'Rename Webtrees Directory':
+    cwd         => $vhost_dir,
+    command     => ['mv', 'webtrees', $webtrees_dir],
+    refreshonly => true,
+    user        => $user,
+    group       => $group,
+    path        => ['/usr/bin', '/usr/sbin',],
   }
 
   # 2 - CONFIGURE
   # Configuration file
   concat { $webtrees_config:
-    ensure => present,
-    owner  => $user,
-    group  => $group,
-    mode   => '0440',
+    ensure  => present,
+    owner   => $user,
+    group   => $group,
+    mode    => '0440',
+    require => Exec['Rename Webtrees Directory'],
   }
   concat::fragment { 'header':
     target  => $webtrees_config,

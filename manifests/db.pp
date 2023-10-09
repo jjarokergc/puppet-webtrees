@@ -23,16 +23,17 @@ class webtrees::db {
   $db = lookup('webtrees::configuration')['db']         # Host-specific parameters
 
   # Install Mysql with php
-  # include mysql::client
-  # class { 'mysql::bindings':    php_enable => true, }
+  include mysql::client
+  class { 'mysql::bindings':    php_enable => true, }
 
   # Create database on remote server.  Warning: database credentials must match those used in wp-config.php
   @@mysql::db { $db['name']:
     user     => $db['user'],
     password => $db['pass'],
-    host     => $facts['networking']['fqdn'],  # user from the wordpress-host is granted access to remote database server
+    host     => $facts['networking']['ip'],  # user from the host is granted access to remote database server
     grant    => ['ALL'],
     charset  => 'utf8mb3',  # same as utf8 but new name in mysql
+    collate  => 'utf8mb3_general_ci',
     tag      => $db['host'],  # to be collected on the database remote host
   }
 

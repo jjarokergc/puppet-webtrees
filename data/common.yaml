@@ -24,7 +24,7 @@ webtrees::configuration:
     client_max_body_size: "10m"
   config_file:
     path : 'data/config.ini.php'      # Webtrees configuration file
-    base_url_scheme: 'https' # Used with 'fqdn' to form URL. Either 'http' or 'https'
+    base_url_scheme: 'https' # Used with 'fqdn' to form base_URL. Either 'http' or 'https'
     rewrite_urls: '1'                 # Pretty URLs. NGINX compatible config required.
   db:
     name: 'db_webtrees'
@@ -40,8 +40,8 @@ webtrees::configuration:
     cpu_time: '80' # Max Execution Time
 webtrees::source: 
   # See: https://github.com/fisharebest/webtrees/releases
-  version: "2.0.19"
-  download_link: 'https://github.com/fisharebest/webtrees/archive/refs/tags'
+  version: "2.1.17"
+  download_link: 'https://github.com/fisharebest/webtrees/releases/download'
 webtrees::php: # php.ini configuration
   logging_mode: 'debugging' # Selects one of the logging modes below.
   general:
