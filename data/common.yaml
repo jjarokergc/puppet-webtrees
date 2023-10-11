@@ -21,7 +21,7 @@ webtrees::configuration:
     fqdn: "example.com" # Main fqdn for this server - Used in config
     urls:   # List of all listen urls for Nginx. Node's own fqdn included through the 'deep' merge strategy
       - "%{networking.fqdn}"
-  server_params: # These parameters are passed to nginx::resource::server
+  server_params: # This hash is passed to nginx::resource::server
     index_files: []
     use_default_location: false
     client_max_body_size: "10m"         # Max size of upload
